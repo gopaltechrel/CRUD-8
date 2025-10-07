@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animated CRUD with Avatars 😎</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <style>
+    body {
+      background: linear-gradient(to right, #a8edea, #fed6e3);
+      min-height: 100vh;
+      padding-top: 40px;
+      font-family: 'Poppins', sans-serif;
+    }
+    .card {
+      border-radius: 15px;
+    }
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    .avatar:hover {
+      transform: scale(1.2);
+    }
+    .btn-emoji { font-size: 1.1rem; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="card shadow-lg animate__animated animate__fadeInDown">
+    <div class="card-header bg-gradient text-white text-center" style="background: linear-gradient(90deg,#007bff,#00c6ff);">
+      <h3 class="mb-0">👤 Animated CRUD with Avatars ✨</h3>
+    </div>
+    <div class="card-body">
+      <!-- Form -->
+      <form id="crudForm" class="row g-2 mb-4">
+        <div class="col-md-3">
+          <input type="text" id="name" class="form-control" placeholder="Enter Name 😃" required>
+        </div>
+        <div class="col-md-4">
+          <input type="email" id="email" class="form-control" placeholder="Enter Email 📧" required>
+        </div>
+        <div class="col-md-3">
+          <input type="url" id="avatar" class="form-control" placeholder="Avatar URL 🖼️ (optional)">
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-success w-100 animate__animated animate__pulse">➕ Add</button>
+        </div>
+      </form>
+
+      <!-- Table -->
+      <table class="table table-striped table-hover align-middle text-center animate__animated animate__fadeInUp">
+        <thead class="table-dark">
+          <tr>
+            <th>#️⃣</th>
+            <th>Avatar 👤</th>
+            <th>Name 😃</th>
+            <th>Email 📧</th>
+            <th>Actions ⚙️</th>
+          </tr>
+        </thead>
+        <tbody id="crudTable"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  let data = [];
+  let editIndex = -1;
+
+  const form = document.getElementById('crudForm');
+  const tableBody = document.getElementById('crudTable');
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const avatar = document.getElementById('avatar').value.trim() || 
+      `https://api.dicebear.com/9.x/avataaars/svg?seed=${name}`;
+
+    if(editIndex === -1){
+      data.push({name, email, avatar});
+    } else {
+      data[editIndex] = {name, email, avatar};
+      editIndex = -1;
+    }
+
+    form.reset();
+    renderTable();
+  });
+
+  function renderTable(){
+    tableBody.innerHTML = '';
+    data.forEach((item,index)=>{
+      const row = document.createElement('tr');
+      row.className = 'animate__animated animate__fadeIn';
+      row.innerHTML = `
+        <td>${index+1}</td>
+        <td><img src="${item.avatar}" alt="Avatar" class="avatar"></td>
+        <td>${item.name}</td>
+        <td>${item.email}</td>
+        <td>
+          <button class="btn btn-warning btn-sm btn-emoji" onclick="editItem(${index})">✏️</button>
+          <button class="btn btn-danger btn-sm btn-emoji" onclick="deleteItem(${index})">🗑️</button>
+        </td>`;
+      tableBody.appendChild(row);
+    });
+  }
+
+  function editItem(index){
+    document.getElementById('name').value = data[index].name;
+    document.getElementById('email').value = data[index].email;
+    document.getElementById('avatar').value = data[index].avatar;
+    editIndex = index;
+  }
+
+  function deleteItem(index){
+    data.splice(index,1);
+    renderTable();
+  }
+</script>
+
+</body>
+</html>
